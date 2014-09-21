@@ -1,0 +1,212 @@
+*komadori.txt*
+
+Version: 0.1.0
+Author: balloon-stat
+Last Change: 21-Sep-2014.
+License: The MIT License (MIT)
+
+Copyright (c) 2014 balloon-stat
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+CONTENTS                                                   *komadori-contents*
+
+Introduction                                               |dirs-introduction|
+Interface                                                     |dirs-interface|
+  Commands                                                     |dirs-commands|
+  Functions                                                   |dirs-functions|
+  Variables                                                   |dirs-variables|
+Default Key Mappings                               |dirs-default-key-mappings|
+  Global Key Mappings                               |dirs-global-key-mappings|
+  Buffer Local Key Mappings                   |dirs-buffer-local-key-mappings|
+
+==============================================================================
+INTRODUCTION                                               *dirs-introduction*
+
+何度も開くファイルをメモしてアクセスを簡単にします。
+シンプルなランチャー機能もあります。
+
+~/vim_dirs にファイルパスのツリーを書いていきます。
+DirsOpenBufコマンドを実行して、vim_dirsファイルを開いてください。
+バッファが開かれるときに ~/.dirs_rc が実行されます。
+
+~/.dirs_rc を用意しない場合、デフォルトである autoload/dirs_rc.vim
+を実行します。
+
+==============================================================================
+INTERFACE                                                     *dirs-interface*
+
+------------------------------------------------------------------------------
+COMMANDS                                                       *dirs-commands*
+
+                                                                *:DirsOpenBuf*
+:DirsOpenBuf
+      |dirs#open()| のコマンドバージョンです。
+      新しいウィンドウを左に作り、vim_dirsバッファを開きます。
+      このとき `g:dirs_rc_filename' を実行します。
+
+------------------------------------------------------------------------------
+FUNCTIONS                                                 *komadori-functions*
+
+                                                                 *dirs#open()*
+dirs#open()
+      新しいウィンドウを左に作り、vim_dirsバッファを開きます。
+      このとき `g:dirs_rc_filename' を実行します。
+
+                                                                 *dirs#edit()*
+dirs#edit()
+      ウィンドウを作らずに、vim_dirsバッファを開きます。
+      このとき `g:dirs_rc_filename' を実行します。
+
+                                                            *dirs#getln(lnum)*
+dirs#getln(lnum)
+      lnum の行の先頭の半角スペースの数とそれを除いた文字列のリストを返します。
+      lnum の詳細は line() のヘルプを参照してください。
+
+                                                                *dirs#curln()*
+dirs#curln()
+      現在カーソルがある行が折りたたまれているときは折りたたみを開きます。
+      現在カーソルがある行の先頭の半角スペースを覗いたパスを返します。
+
+                                                                 *dirs#tail()*
+dirs#tail()
+      現在カーソルがある行の最も後ろのノードを返します。
+
+                                                         *dirs#fullpath(lnum)*
+dirs#fullpath(lnum)
+      lnum の行の、カスケードになっているパスを遡って連結しフルパスを作り、
+      先頭の半角スペースの数とそれを除いた文字列のリストを返します。
+
+                                                             *dirs#ls(ignore)*
+dirs#ls(ignore)
+      現在カーソルがある行のディレクトリの下にあるノードの一覧を
+      現在行の下に追加します。
+      ignore には一覧から除外したいノードの正規表現を指定します。
+
+                                                                *dirs#entry()*
+dirs#entry()
+      現在カーソルがある行が折りたたまれているときは折りたたみを開きます。
+      開かれている場合にはカスケードになっているパスを遡って連結し
+      フルパスを返します。
+
+                                            *dirs#do_entry(edit_cmd, win_cmd)*
+dirs#do_entry(edit_cmd, win_cmd)
+      現在カーソルがある行が折りたたまれているときは折りたたみを開きます。
+      開かれている場合には wincmd を win_cmd を引数にして実行し、その後、
+      edit_cmd にフルパスを渡して実行します。
+
+                                                             *dirs#inputcmd()*
+dirs#inputcmd()
+      コマンドの入力を求め、それを実行します。
+      `dirs#entry()' を実行し、その値を引数とします。
+
+                                                               +dirs#rename()*
+dirs#rename()
+      リネームします。
+      `dirs#entry()' を実行し、その値を引数とします。
+
+                                                                *dirs#mkdir()*
+dirs#mkdir()
+      ディレクトリを作成します。
+      `dirs#entry()' を実行し、その値を引数とします。
+
+                                                               *dirs#delete()*
+dirs#delete()
+      ファイルを削除します。 
+      `dirs#entry()' を実行し、その値を引数とします。
+
+------------------------------------------------------------------------------
+VARIABLES                                                     *dirs-variables*
+
+                                                         *g:dirs_window_width*
+g:dirs_window_width
+      (Default: 24)
+      DirsOpenBuf 実行時のバッファの幅
+
+                                                           *g:dirs_shiftwidth*
+g:dirs_shiftwidth
+      (Default: 1)
+      vim_dirs バッファの shiftwidth
+
+                                                             *g:dirs_filename*
+g:dirs_filename vim_dirs
+      (Default: '~/vim_dirs')
+      vim_dirs バッファのファイルパス
+
+                                                          *g:dirs_rc_filename*
+g:dirs_rc_filename
+      (Default: '~/.dirs_rc')
+      DirsOpenBuf 実行時の設定ファイルのパス
+
+                                                            *g:dirs_separator*
+g:dirs_separator
+      (Default for MS-Windows: '\')
+      (Default for others: '/')
+      パスの区切り
+
+==============================================================================
+Default Key Mappings                               |dirs-default-key-mappings|
+
+------------------------------------------------------------------------------
+Global Key Mappings                                 |dirs-global-key-mappings|
+
+Normal mode mappings.
+
+{lhs}         {rhs}
+--------      -----------------------------
+m             :<C-u>call <SID>append_mark()<CR>
+
+------------------------------------------------------------------------------
+Buffer Local Key Mappings                     |dirs-buffer-local-key-mappings|
+
+Normal mode mappings.
+
+{lhs}         {rhs}
+--------      -----------------------------
+ga            :<C-u>echo system("git add " . dirs#entry())<CR>
+gr            :<C-u>call dirs#inputcmd()<CR>
+gc            :<C-u>execute 'chdir' dirs#entry()<CR>
+gj            ddp
+gk            kddpk
+gl            :<C-u>call dirs#ls("")<CR>
+gh            zc
+ge            :<C-u>call setreg(v:register == "" ? '"' : v:register, dirs#entry())<CR>
+gy            :<C-u>call setreg(v:register == "" ? '"' : v:register, dirs#curln())<CR>
+gp            $p
+gs            :<C-u>call dirs#do_entry('split', 'l')<CR>
+go            :<C-u>call dirs#do_entry('edit', 'l')<CR>
+t             :<C-u>call dirs#do_entry('tabe', '')<CR>
+,             :<C-u>wall<CR>go
+<CR>          :<C-u>wall<CR>go
+<2-LeftMouse> :<C-u>wall<CR>go
+gv            go:wincmd p<CR>
+v             :<C-u>wall<CR>gv
+Y             :<C-u>call <SID>yank_buf()<CR>
+P             :<C-u>call <SID>paste_buf()<CR>
+D             :<C-u>call dirs#delete()<CR>
+R             :<C-u>call dirs#rename()<CR>
+M             :<C-u>call dirs#mkdir()<CR>
+J             Jx
+w             wl
+b             bh
+e             $
+f             :<C-u>call <SID>search_tailhead()<CR>
+;             :<C-u>call <SID>repeat_search()<CR>
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

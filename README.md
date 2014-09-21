@@ -10,8 +10,7 @@ version 0.1.0
 DirsOpenBufコマンドを実行して、vim_dirsファイルを開いてください。  
 バッファが開かれるときに ~/.dirs_rc が実行されます。  
 
-~/.dirs_rc を用意しない場合、デフォルトである autoload/dirs_rc.vim  
-を実行します。  
+~/.dirs_rc を用意しない場合、デフォルトである autoload/dirs_rc.vim を実行します。  
 
 ### 関数
 
@@ -121,6 +120,7 @@ dirs#do_entry(edit_cmd, win_cmd)
 
 Buffer local Map  
 
+```vim
 ga :<C-u>echo system("git add " . dirs#entry())<CR>  
 gr :<C-u>call dirs#inputcmd()<CR>  
 gc :<C-u>execute 'chdir' dirs#entry()<CR>  
@@ -137,7 +137,7 @@ t  :<C-u>call dirs#do_entry('tabe', '')<CR>
 , :<C-u>wall<CR>go  
 <CR> :<C-u>wall<CR>go  
 <2-LeftMouse> :<C-u>wall<CR>go  
-<silent> gv go:wincmd p<CR>  
+gv :<C-u>if dirs#do_entry('e', 'l') \| wincmd p \| endif<CR>  
 v :<C-u>wall<CR>gv  
 Y :<C-u>call <SID>yank_buf()<CR>  
 P :<C-u>call <SID>paste_buf()<CR>  
@@ -150,9 +150,11 @@ b bh
 e $  
 f :<C-u>call <SID>search_tailhead()<CR>  
 ; :<C-u>call <SID>repeat_search()<CR>  
+```
 
 Global Map 
 
+```vim
 m :<C-u>call <SID>append_mark()<CR>  
-
+```
 
