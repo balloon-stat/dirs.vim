@@ -3,29 +3,29 @@ nnoremap <silent> m :<C-u>call <SID>append_mark()<CR>
 
 let s:filename = fnamemodify(bufname('%'), ':t')
 if s:filename == fnamemodify(expand(g:dirs_filename), ':t')
-  nnoremap <buffer> <silent> ga :<C-u>echo system("git add " . dirs#entry())<CR>
-  nnoremap <buffer> <silent> gr :<C-u>call dirs#inputcmd()<CR>
-  nnoremap <buffer> <silent> gc :<C-u>call <SID>chdir()<CR>
-  nnoremap <buffer> <silent> gj ddp
-  nnoremap <buffer> <silent> gk kddpk
-  nnoremap <buffer> <silent> gl :<C-u>call dirs#ls("")<CR>
-  nnoremap <buffer> <silent> gh zc
+  nnoremap <buffer> ga :<C-u>echo system("git add " . dirs#entry())<CR>
+  nnoremap <buffer> gr :<C-u>echo dirs#inputcmd()<CR>
+  nnoremap <buffer> gc :<C-u>echo <SID>chdir()<CR>
+  nnoremap <buffer> gj ddp
+  nnoremap <buffer> gk kddpk
+  nnoremap <buffer> gl :<C-u>call dirs#ls("")<CR>
+  nnoremap <buffer> gh zc
   nnoremap <buffer> <silent> ge :<C-u>call setreg(v:register == "" ? '"' : v:register, dirs#entry())<CR>
   nnoremap <buffer> <silent> gy :<C-u>call setreg(v:register == "" ? '"' : v:register, dirs#curln())<CR>
-  nnoremap <buffer> <silent> gp $p
-  nnoremap <buffer> <silent> gs :<C-u>call dirs#do_entry('split', 'l')<CR>
-  nnoremap <buffer> <silent> go :<C-u>call dirs#do_entry('edit', 'l')<CR>
-  nnoremap <buffer> <silent> t  :<C-u>call dirs#do_entry('tabe', '')<CR>
+  nnoremap <buffer> gp $p
+  nnoremap <buffer> gs :<C-u>call dirs#do_entry('split', 'l')<CR>
+  nnoremap <buffer> go :<C-u>call dirs#do_entry('edit', 'l')<CR>
+  nnoremap <buffer> t  :<C-u>call dirs#do_entry('tabe', '')<CR>
   nmap <buffer> , :<C-u>wall<CR>go
   nmap <buffer> <CR> :<C-u>wall<CR>go
   nmap <buffer> <2-LeftMouse> :<C-u>wall<CR>go
-  nmap <buffer> <silent> gv :<C-u>if dirs#do_entry('e', 'l') \| wincmd p \| endif<CR>
+  nmap <buffer> gv :<C-u>if dirs#do_entry('e', 'l') \| wincmd p \| endif<CR>
   nmap <buffer> v :<C-u>wall<CR>gv
-  nnoremap <buffer> <silent> Y :<C-u>call <SID>yank_buf()<CR>
-  nnoremap <buffer> <silent> P :<C-u>call <SID>paste_buf()<CR>
-  nnoremap <buffer> <silent> D :<C-u>call dirs#delete()<CR>
-  nnoremap <buffer> <silent> R :<C-u>call dirs#rename()<CR>
-  nnoremap <buffer> <silent> M :<C-u>call dirs#mkdir()<CR>
+  nnoremap <buffer> Y :<C-u>call <SID>yank_buf()<CR>
+  nnoremap <buffer> P :<C-u>call <SID>paste_buf()<CR>
+  nnoremap <buffer> D :<C-u>call dirs#delete()<CR>
+  nnoremap <buffer> R :<C-u>call dirs#rename()<CR>
+  nnoremap <buffer> M :<C-u>call dirs#mkdir()<CR>
   nnoremap <buffer> J Jx
   nnoremap <buffer> w wl
   nnoremap <buffer> b bh
@@ -52,7 +52,7 @@ endfunction
 function! s:chdir()
   let entry = dirs#entry()
   execute 'chdir' entry
-  echo entry
+  return entry
 endfunction
 
 let s:search_char = ""

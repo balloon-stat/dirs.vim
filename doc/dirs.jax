@@ -1,4 +1,4 @@
-*komadori.txt*
+*dirs.txt*
 
 Version: 0.1.0
 Author: balloon-stat
@@ -23,7 +23,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-CONTENTS                                                   *komadori-contents*
+CONTENTS                                                       *dirs-contents*
 
 Introduction                                               |dirs-introduction|
 Interface                                                     |dirs-interface|
@@ -37,7 +37,8 @@ Default Key Mappings                               |dirs-default-key-mappings|
 ==============================================================================
 INTRODUCTION                                               *dirs-introduction*
 
-何度も開くファイルをメモしてアクセスを簡単にします。
+カーソル下のパスが指すファイルを隣のウィンドウで開きます。
+IDEによくあるプロジェクトエクスプローラのような使い方ができます。
 シンプルなランチャー機能もあります。
 
 ~/vim_dirs にファイルパスのツリーを書いていきます。
@@ -46,6 +47,26 @@ DirsOpenBufコマンドを実行して、vim_dirsファイルを開いてくだ�
 
 ~/.dirs_rc を用意しない場合、デフォルトである autoload/dirs_rc.vim
 を実行します。
+
+DirsOpenBufコマンドを実行すると左側に新しいウィンドウが作られます。
+このウィンドウのバッファにアクセスしたいファイルのパスを書きます。
+
+パスにカーソルを合わせて Enterキーを押すと  
+右のウィンドウで、そのファイルを表示され編集することができるようになります。
+
+パスは通常の表記のほかツリー上にインデントしてカスケードさせることができます。
+
+/home/user/
+  foo0/
+    foo1
+    bar0/
+      bar1
+      bar2
+  baz0/
+    baz1
+
+ディレクトリ下のファイルの一覧は `dirs#ls()` で得られます。
+デフォルトでは gl にマップされています。
 
 ==============================================================================
 INTERFACE                                                     *dirs-interface*
@@ -178,8 +199,8 @@ Normal mode mappings.
 {lhs}         {rhs}
 --------      -----------------------------
 ga            :<C-u>echo system("git add " . dirs#entry())<CR>
-gr            :<C-u>call dirs#inputcmd()<CR>
-gc            :<C-u>execute 'chdir' dirs#entry()<CR>
+gr            :<C-u>echo dirs#inputcmd()<CR>
+gc            :<C-u>echo <SID>chdir()<CR>
 gj            ddp
 gk            kddpk
 gl            :<C-u>call dirs#ls("")<CR>
@@ -193,7 +214,7 @@ t             :<C-u>call dirs#do_entry('tabe', '')<CR>
 ,             :<C-u>wall<CR>go
 <CR>          :<C-u>wall<CR>go
 <2-LeftMouse> :<C-u>wall<CR>go
-gv            go:wincmd p<CR>
+gv            :<C-u>if dirs#do_entry('e', 'l') \| wincmd p \| endif<CR>
 v             :<C-u>wall<CR>gv
 Y             :<C-u>call <SID>yank_buf()<CR>
 P             :<C-u>call <SID>paste_buf()<CR>

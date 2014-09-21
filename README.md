@@ -3,7 +3,7 @@ dirs.vim
 
 version 0.1.0 
 
-何度も開くファイルをメモしてアクセスを簡単にします。  
+カーソル下のパスが指すファイルを隣のウィンドウで開きます。  
 IDEによくあるプロジェクトエクスプローラのような使い方ができます。  
 シンプルなランチャー機能もあります。  
  
@@ -16,25 +16,24 @@ DirsOpenBufコマンドを実行して、vim_dirsファイルを開いてくだ�
 DirsOpenBufコマンドを実行すると左側に新しいウィンドウが作られます。  
 このウィンドウのバッファにアクセスしたいファイルのパスを書きます。  
 
-デフォルトではパスにカーソルを合わせて Enterキーを押すと  
-右のウィンドウにそのファイルが表示されます。  
+パスにカーソルを合わせて Enterキーを押すと  
+右のウィンドウで、そのファイルを表示され編集することができるようになります。  
 
-パスは通常の表記のほかツリー上にインデントしてカスケードさせることができます。
+パスは通常の表記のほかツリー上にインデントしてカスケードさせることができます。  
 
 ```
 /home/user/
-  foo/
+  foo0/
     foo1
-    foo2
-    foo3
-  bar/
-    bar1
-    bar2
-  baz/
+    bar0/
+      bar1
+      bar2
+  baz0/
     baz1
-    bazz/
-      bazz1
 ```
+
+ディレクトリ下のファイルの一覧は `dirs#ls()` で得られます。  
+デフォルトでは gl にマップされています。  
 
 ### 関数
 
@@ -91,41 +90,49 @@ dirs#do_entry(edit_cmd, win_cmd)
 
 Buffer local Map  
 
-```
-ga :<C-u>echo system("git add " . dirs#entry())<CR>  
-gr :<C-u>call dirs#inputcmd()<CR>  
-gc :<C-u>execute 'chdir' dirs#entry()<CR>  
-gj ddp  
-gk kddpk  
-gl :<C-u>call dirs#ls("")<CR>  
-gh zc  
-ge :<C-u>call setreg(v:register == "" ? '"' : v:register, dirs#entry())<CR>  
-gy :<C-u>call setreg(v:register == "" ? '"' : v:register, dirs#curln())<CR>  
-gp $p  
-gs :<C-u>call dirs#do_entry('split', 'l')<CR>  
-go :<C-u>call dirs#do_entry('edit', 'l')<CR>  
-t  :<C-u>call dirs#do_entry('tabe', '')<CR>  
-, :<C-u>wall<CR>go  
-<CR> :<C-u>wall<CR>go  
-<2-LeftMouse> :<C-u>wall<CR>go  
-gv :<C-u>if dirs#do_entry('e', 'l') \| wincmd p \| endif<CR>  
-v :<C-u>wall<CR>gv  
-Y :<C-u>call <SID>yank_buf()<CR>  
-P :<C-u>call <SID>paste_buf()<CR>  
-D :<C-u>call dirs#delete()<CR>  
-R :<C-u>call dirs#rename()<CR>  
-M :<C-u>call dirs#mkdir()<CR>  
-J Jx  
-w wl  
-b bh  
-e $  
-f :<C-u>call <SID>search_tailhead()<CR>  
-; :<C-u>call <SID>repeat_search()<CR>  
+```vim
+Normal mode mappings.
+
+{lhs}         {rhs}
+--------      -----------------------------
+ga             :<C-u>echo system("git add " . dirs#entry())<CR>  
+gr             :<C-u>call dirs#inputcmd()<CR>  
+gc             :<C-u>execute 'chdir' dirs#entry()<CR>  
+gj             ddp  
+gk             kddpk  
+gl             :<C-u>call dirs#ls("")<CR>  
+gh             zc  
+ge             :<C-u>call setreg(v:register == "" ? '"' : v:register, dirs#entry())<CR>  
+gy             :<C-u>call setreg(v:register == "" ? '"' : v:register, dirs#curln())<CR>  
+gp             $p  
+gs             :<C-u>call dirs#do_entry('split', 'l')<CR>  
+go             :<C-u>call dirs#do_entry('edit', 'l')<CR>  
+t              :<C-u>call dirs#do_entry('tabe', '')<CR>  
+,              :<C-u>wall<CR>go  
+<CR>           :<C-u>wall<CR>go  
+<2-LeftMouse>  :<C-u>wall<CR>go  
+gv             :<C-u>if dirs#do_entry('e', 'l') \| wincmd p \| endif<CR>  
+v              :<C-u>wall<CR>gv  
+Y              :<C-u>call <SID>yank_buf()<CR>  
+P              :<C-u>call <SID>paste_buf()<CR>  
+D              :<C-u>call dirs#delete()<CR>  
+R              :<C-u>call dirs#rename()<CR>  
+M              :<C-u>call dirs#mkdir()<CR>  
+J              Jx  
+w              wl  
+b              bh  
+e              $  
+f              :<C-u>call <SID>search_tailhead()<CR>  
+;              :<C-u>call <SID>repeat_search()<CR>  
 ```
 
 Global Map 
 
-```
-m :<C-u>call <SID>append_mark()<CR>  
+```vim
+Normal mode mappings.
+
+{lhs}         {rhs}
+--------      -----------------------------
+m              :<C-u>call <SID>append_mark()<CR>  
 ```
 

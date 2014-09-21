@@ -166,7 +166,7 @@ function! dirs#inputcmd()
     return
   endif
   let cmd = input("input command for " . entry . "\n")
-  echo system(cmd . ' ' . entry)
+  return system(cmd . ' ' . entry)
 endfunction
 
 function! dirs#rename()
