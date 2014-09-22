@@ -75,11 +75,12 @@ endfunction
 function! dirs#fullpath(lnum)
   let [level, path] = dirs#getln(a:lnum)
   if level == -1
-    return [0, 0]
+    return [-1, 0]
   endif
   let ln = line(a:lnum)
   let lv = level
-  while ln > 0
+  while ln > 0 && lv > 0
+    let ln -= 1
     let [nlv, entry] = dirs#getln(ln)
     if nlv == -1
       continue
@@ -90,7 +91,6 @@ function! dirs#fullpath(lnum)
         break
       endif
     endif
-    let ln -= 1
   endwhile
   return [level, path]
 endfunction
@@ -148,7 +148,8 @@ function! dirs#do_entry(edit_cmd, win_cmd)
   endif
   let path = dirs#entry()
   if isdirectory(path)
-    normal! zc
+    execute 'chdir' path
+    echo "cwd:" path
     return 0
   elseif a:win_cmd != ""
     execute 'wincmd' a:win_cmd

@@ -1,8 +1,8 @@
 *dirs.txt*
 
-Version: 0.1.0
+Version: 0.1.1
 Author: balloon-stat
-Last Change: 21-Sep-2014.
+Last Change: 22-Sep-2014.
 License: The MIT License (MIT)
 
 Copyright (c) 2014 balloon-stat
@@ -51,8 +51,10 @@ DirsOpenBufコマンドを実行して、vim_dirsファイルを開いてくだ�
 DirsOpenBufコマンドを実行すると左側に新しいウィンドウが作られます。
 このウィンドウのバッファにアクセスしたいファイルのパスを書きます。
 
-パスにカーソルを合わせて Enterキーを押すと  
-右のウィンドウで、そのファイルを表示され編集することができるようになります。
+パスにカーソルを合わせて Enterキーを押すと
+指すのがファイルの場合、右のウィンドウに、そのファイルが表示されます。
+このときカーソルも右のウィンドウへ移動します。
+ディレクトリの場合はそのディレクトリに cd します。
 
 パスは通常の表記のほかツリー上にインデントしてカスケードさせることができます。
 
@@ -65,7 +67,8 @@ DirsOpenBufコマンドを実行すると左側に新しいウィンドウが作
   baz0/
     baz1
 
-ディレクトリ下のファイルの一覧は `dirs#ls()` で得られます。
+ディレクトリ下のファイルの一覧は|dirs#ls()|で得られます。
+|dirs#ls()|を呼ぶとカーソルのある行の次行にファイルの一覧が追加されます。  
 デフォルトでは gl にマップされています。
 
 ==============================================================================
@@ -94,9 +97,10 @@ dirs#edit()
       このとき `g:dirs_rc_filename' を実行します。
 
                                                             *dirs#getln(lnum)*
-dirs#getln(lnum)
-      lnum の行の先頭の半角スペースの数とそれを除いた文字列のリストを返します。
-      lnum の詳細は line() のヘルプを参照してください。
+dirs#getln({lnum})
+      {lnum}の行の先頭の半角スペースの数とそれを除いた文字列のリスト
+      を返します。
+      {lnum}の詳細は|line()|のヘルプを参照してください。
 
                                                                 *dirs#curln()*
 dirs#curln()
@@ -108,47 +112,53 @@ dirs#tail()
       現在カーソルがある行の最も後ろのノードを返します。
 
                                                          *dirs#fullpath(lnum)*
-dirs#fullpath(lnum)
-      lnum の行の、カスケードになっているパスを遡って連結しフルパスを作り、
+dirs#fullpath({lnum}
+      {lnum}の行の、カスケードになっているパスを遡って連結しフルパスを作り、
       先頭の半角スペースの数とそれを除いた文字列のリストを返します。
+      {lnum}の詳細は|line()|のヘルプを参照してください。
 
                                                              *dirs#ls(ignore)*
-dirs#ls(ignore)
+dirs#ls({ignore})
       現在カーソルがある行のディレクトリの下にあるノードの一覧を
       現在行の下に追加します。
-      ignore には一覧から除外したいノードの正規表現を指定します。
+      {ignore}には一覧から除外したいノードの正規表現を指定します。
 
                                                                 *dirs#entry()*
 dirs#entry()
       現在カーソルがある行が折りたたまれているときは折りたたみを開きます。
-      開かれている場合にはカスケードになっているパスを遡って連結し
+      開かれている場合にはカスケードにされているノードを遡って連結し
       フルパスを返します。
 
-                                            *dirs#do_entry(edit_cmd, win_cmd)*
-dirs#do_entry(edit_cmd, win_cmd)
+                                                             *dirs#do_entry()*
+dirs#do_entry({edit-cmd}, {win-cmd})
       現在カーソルがある行が折りたたまれているときは折りたたみを開きます。
-      開かれている場合には wincmd を win_cmd を引数にして実行し、その後、
-      edit_cmd にフルパスを渡して実行します。
+      開かれている場合にはカスケードにされているノードを遡って連結し
+      フルパスを作ります。
+      パスが指すのがファイルの場合、|:wincmd|を{win-cmd}を引数にして実行し、
+      その後、{edit-cmd}にパスを渡して実行します。
+      ディレクトリの場合、そのディレクトリに|:cd|します。
+      行の先頭が ':' の場合は、|:wincmd|を{win-cmd}を引数にして実行し、
+      その後、Exコマンドとして実行します。
 
                                                              *dirs#inputcmd()*
 dirs#inputcmd()
-      コマンドの入力を求め、それを実行します。
-      `dirs#entry()' を実行し、その値を引数とします。
+      コマンドの入力を求め、それを引数と共に実行します。
+      |dirs#entry()|を実行し、その値を引数とします。
 
-                                                               +dirs#rename()*
+                                                               *dirs#rename()*
 dirs#rename()
-      リネームします。
-      `dirs#entry()' を実行し、その値を引数とします。
+      ファイル名の入力を求め、その名前にリネームします。
+      |dirs#entry()|を実行し、その値を引数とします。
 
                                                                 *dirs#mkdir()*
 dirs#mkdir()
       ディレクトリを作成します。
-      `dirs#entry()' を実行し、その値を引数とします。
+      |dirs#entry()|を実行し、その値を引数とします。
 
                                                                *dirs#delete()*
 dirs#delete()
-      ファイルを削除します。 
-      `dirs#entry()' を実行し、その値を引数とします。
+      ファイルを削除します。
+      |dirs#entry()|を実行し、その値を引数とします。
 
 ------------------------------------------------------------------------------
 VARIABLES                                                     *dirs-variables*
@@ -214,6 +224,7 @@ t             :<C-u>call dirs#do_entry('tabe', '')<CR>
 ,             :<C-u>wall<CR>go
 <CR>          :<C-u>wall<CR>go
 <2-LeftMouse> :<C-u>wall<CR>go
+gf            :<C-u>echo dirs#tail()<CR>
 gv            :<C-u>if dirs#do_entry('e', 'l') \| wincmd p \| endif<CR>
 v             :<C-u>wall<CR>gv
 Y             :<C-u>call <SID>yank_buf()<CR>

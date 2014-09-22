@@ -5,7 +5,6 @@ let s:filename = fnamemodify(bufname('%'), ':t')
 if s:filename == fnamemodify(expand(g:dirs_filename), ':t')
   nnoremap <buffer> ga :<C-u>echo system("git add " . dirs#entry())<CR>
   nnoremap <buffer> gr :<C-u>echo dirs#inputcmd()<CR>
-  nnoremap <buffer> gc :<C-u>echo <SID>chdir()<CR>
   nnoremap <buffer> gj ddp
   nnoremap <buffer> gk kddpk
   nnoremap <buffer> gl :<C-u>call dirs#ls("")<CR>
@@ -19,7 +18,8 @@ if s:filename == fnamemodify(expand(g:dirs_filename), ':t')
   nmap <buffer> , :<C-u>wall<CR>go
   nmap <buffer> <CR> :<C-u>wall<CR>go
   nmap <buffer> <2-LeftMouse> :<C-u>wall<CR>go
-  nmap <buffer> gv :<C-u>if dirs#do_entry('e', 'l') \| wincmd p \| endif<CR>
+  nnoremap <buffer> gf :<C-u>echo dirs#tail()<CR>
+  nnoremap <buffer> gv :<C-u>if dirs#do_entry('e', 'l') \| wincmd p \| endif<CR>
   nmap <buffer> v :<C-u>wall<CR>gv
   nnoremap <buffer> Y :<C-u>call <SID>yank_buf()<CR>
   nnoremap <buffer> P :<C-u>call <SID>paste_buf()<CR>
@@ -47,12 +47,6 @@ function! s:paste_buf()
     call append(0, s:regitser)
     wincmd p
   endif
-endfunction
-
-function! s:chdir()
-  let entry = dirs#entry()
-  execute 'chdir' entry
-  return entry
 endfunction
 
 let s:search_char = ""
@@ -100,9 +94,9 @@ endfunction
 
 function! s:append_mark()
   let ch = nr2char(getchar())
-  let name = bufname('%')
+  let name = fnamemodify(bufname('%'), ':t')
   let lnum = line('.')
   execute 'mark' ch
   call dirs#open()
-  call append(0, ":normal! '" . ch . "  # " . name . ": " . lnum)
+  call append(0, ":norm! '" . ch . " #" . lnum . ":" . name)
 endfunction
