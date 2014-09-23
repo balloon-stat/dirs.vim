@@ -94,6 +94,9 @@ endfunction
 
 function! s:append_mark()
   let ch = nr2char(getchar())
+  if ch !~? '[a-z]'
+    return
+  endif
   let name = fnamemodify(bufname('%'), ':t')
   let lnum = line('.')
   execute 'mark' ch
