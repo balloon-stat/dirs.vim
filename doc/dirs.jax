@@ -2,7 +2,7 @@
 
 Version: 0.1.1
 Author: balloon-stat
-Last Change: 22-Sep-2014.
+Last Change: 24-Sep-2014.
 License: The MIT License (MIT)
 
 Copyright (c) 2014 balloon-stat
@@ -31,30 +31,13 @@ Interface                                                     |dirs-interface|
   Functions                                                   |dirs-functions|
   Variables                                                   |dirs-variables|
 Default Key Mappings                               |dirs-default-key-mappings|
-  Global Key Mappings                               |dirs-global-key-mappings|
   Buffer Local Key Mappings                   |dirs-buffer-local-key-mappings|
 
 ==============================================================================
 INTRODUCTION                                               *dirs-introduction*
 
-カーソル下のパスが指すファイルを隣のウィンドウで開きます。
-IDEによくあるプロジェクトエクスプローラのような使い方ができます。
-シンプルなランチャー機能もあります。
-
-~/vim_dirs にファイルパスのツリーを書いていきます。
-DirsOpenBufコマンドを実行して、vim_dirsファイルを開いてください。
-バッファが開かれるときに ~/.dirs_rc が実行されます。
-
-~/.dirs_rc を用意しない場合、デフォルトである autoload/dirs_rc.vim
-を実行します。
-
-DirsOpenBufコマンドを実行すると左側に新しいウィンドウが作られます。
-このウィンドウのバッファにアクセスしたいファイルのパスを書きます。
-
-パスにカーソルを合わせて Enterキーを押すと
-指すのがファイルの場合、右のウィンドウに、そのファイルが表示されます。
-このときカーソルも右のウィンドウへ移動します。
-ディレクトリの場合はそのディレクトリに cd します。
+ファイルパスを特定のファイル（~/vim_dirs）に記述することによって、
+そのパスが指すファイルを隣のウィンドウで開きます。
 
 パスは通常の表記のほかツリー上にインデントしてカスケードさせることができます。
 
@@ -67,9 +50,31 @@ DirsOpenBufコマンドを実行すると左側に新しいウィンドウが作
   baz0/
     baz1
 
-ディレクトリ下のファイルの一覧は|dirs#ls()|で得られます。
-|dirs#ls()|を呼ぶとカーソルのある行の次行にファイルの一覧が追加されます。  
-デフォルトでは gl にマップされています。
+
+パスの組み立てはインデントを見て行なわれます。
+またインデントの深さによって折り畳みを行います。
+
+
+DirsOpenBufコマンドを実行すると、左側に新しいウィンドウが作られて
+vim_dirsファイルがそのウィンドウに開かれます。
+ここにアクセスしたいファイルのパスを書いて下さい。
+
+デフォルトのキー設定では gl と入力することで、
+ディレクトリ下のファイルの一覧をその次の行へと追記することができます。
+
+パスにカーソルを合わせて Enterキーを押すと
+ファイルの場合、右のウィンドウにカーソルが移動し、そのファイルを開きます。
+ディレクトリの場合は、そのディレクトリに cd します。
+
+また、パス以外にExコマンドを書いて、Enter で実行することもできます。
+Exコマンドはコマンドの先頭に ":" を書いてください。
+
+
+DirsOpenBufの実行時にデフォルトでは ~/.dirs_rc が読み込まれます。
+~/.dirs_rc が存在しない場合、autoload/dirs_rc.vim が読み込まれます。
+キー設定を変えたりしたい場合は、autoload/dirs_rc.vim をサンプルに
+~/.dirs_rc を作成してください。
+
 
 ==============================================================================
 INTERFACE                                                     *dirs-interface*
@@ -193,15 +198,6 @@ g:dirs_separator
 Default Key Mappings                               |dirs-default-key-mappings|
 
 ------------------------------------------------------------------------------
-Global Key Mappings                                 |dirs-global-key-mappings|
-
-Normal mode mappings.
-
-{lhs}         {rhs}
---------      -----------------------------
-m             :<C-u>call <SID>append_mark()<CR>
-
-------------------------------------------------------------------------------
 Buffer Local Key Mappings                     |dirs-buffer-local-key-mappings|
 
 Normal mode mappings.
@@ -210,7 +206,6 @@ Normal mode mappings.
 --------      -----------------------------
 ga            :<C-u>echo system("git add " . dirs#entry())<CR>
 gr            :<C-u>echo dirs#inputcmd()<CR>
-gc            :<C-u>echo <SID>chdir()<CR>
 gj            ddp
 gk            kddpk
 gl            :<C-u>call dirs#ls("")<CR>
@@ -218,14 +213,14 @@ gh            zc
 ge            :<C-u>call setreg(v:register == "" ? '"' : v:register, dirs#entry())<CR>
 gy            :<C-u>call setreg(v:register == "" ? '"' : v:register, dirs#curln())<CR>
 gp            $p
-gs            :<C-u>call dirs#do_entry('split', 'l')<CR>
-go            :<C-u>call dirs#do_entry('edit', 'l')<CR>
+gs            :<C-u>call dirs#do_entry('split', 'w')<CR>
+go            :<C-u>call dirs#do_entry('edit', 'w')<CR>
 t             :<C-u>call dirs#do_entry('tabe', '')<CR>
 ,             :<C-u>wall<CR>go
 <CR>          :<C-u>wall<CR>go
 <2-LeftMouse> :<C-u>wall<CR>go
 gf            :<C-u>echo dirs#tail()<CR>
-gv            :<C-u>if dirs#do_entry('e', 'l') \| wincmd p \| endif<CR>
+gv            :<C-u>if dirs#do_entry('e', 'w') \| wincmd p \| endif<CR>
 v             :<C-u>wall<CR>gv
 Y             :<C-u>call <SID>yank_buf()<CR>
 P             :<C-u>call <SID>paste_buf()<CR>
@@ -236,6 +231,7 @@ J             Jx
 w             wl
 b             bh
 e             $
+=             :<C-u>call <SID>win_resize()<CR>
 f             :<C-u>call <SID>search_tailhead()<CR>
 ;             :<C-u>call <SID>repeat_search()<CR>
 

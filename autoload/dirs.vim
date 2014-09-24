@@ -31,7 +31,7 @@ function! s:buf_setup()
   setlocal nonumber noswapfile nobuflisted nowrap
   setlocal expandtab winwidth=1
   let &l:shiftwidth = g:dirs_shiftwidth
-  if filereadable(g:dirs_rc_filename)
+  if filereadable(expand(g:dirs_rc_filename))
     execute 'source' g:dirs_rc_filename
   else
     execute 'source' s:path . g:dirs_separator . 'dirs_rc.vim'
@@ -135,14 +135,14 @@ function! dirs#entry()
 endfunction
 
 function! dirs#do_entry(edit_cmd, win_cmd)
-  let entry = dirs#curln()
-  if entry == ""
+  let line = dirs#curln()
+  if line == ""
     return 0
-  elseif entry[0] == ':'
+  elseif line[0] == ':'
     if a:win_cmd != ""
       execute 'wincmd' a:win_cmd
     endif
-    execute entry[1:]
+    execute line[1:]
     wincmd p
     return 0
   endif
@@ -151,7 +151,8 @@ function! dirs#do_entry(edit_cmd, win_cmd)
     execute 'chdir' path
     echo "cwd:" path
     return 0
-  elseif a:win_cmd != ""
+  endif
+  if a:win_cmd != ""
     execute 'wincmd' a:win_cmd
     if a:edit_cmd[0] == 'e' && path == expand('%:p')
       return 1
@@ -166,8 +167,11 @@ function! dirs#inputcmd()
   if entry == ""
     return
   endif
-  let cmd = input("input command for " . entry . "\n")
-  return system(cmd . ' ' . entry)
+  let cmd = input("input command for " . entry . "\n", "", "shellcmd")
+  if executable(split(cmd)[0])
+    return system(cmd . ' ' . entry)
+  endif
+  return ""
 endfunction
 
 function! dirs#rename()
@@ -177,7 +181,19 @@ function! dirs#rename()
     let newname = input("input new name: ")
     redraw
     let path = fnamemodify(entry, ':h')
-    if rename(entry, path . '/' . newname)
+    let rfp = path . '/' . newname
+    if filewritable(rfp)
+      echo "already exists:" rfp
+      if isdirectory(rfp)
+        return
+      endif
+      let y_n = input("overwrite it? input y or n: ")
+      redraw
+      if y_n != "y"
+        return
+      endif
+    endif
+    if rename(entry, rfp)
       echoerr "fail rename from " . entry . " to " . path . newname
     else
       let oldname = fnamemodify(entry, ':t')
@@ -190,12 +206,12 @@ endfunction
 function! dirs#mkdir()
   let entry = dirs#entry()
   if isdirectory(entry) || filereadable(entry)
-    echoerr "exists:" entry
+    echo "already exists:" entry
     return
   endif
   call mkdir(entry, 'p')
   call s:fix_dir_sign(entry)
-  echo "created:" entry
+  echo "mkdir:" entry
 endfunction
 
 function! dirs#delete()
@@ -203,8 +219,13 @@ function! dirs#delete()
   if isdirectory(entry)
     echo "directry can not delete"
     return
-  elseif delete(entry)
-    echoerr "fail delete" entry
+  elseif glob(entry) == ""
+    echo "does not exists:" entry
+    normal dd
+    return
+  endif
+  if delete(entry)
+    echo "fail delete" entry
   else
     normal dd
   endif

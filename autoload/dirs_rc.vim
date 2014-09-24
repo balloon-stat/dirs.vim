@@ -1,5 +1,6 @@
+" vim: set ft=vim:
 
-nnoremap <silent> m :<C-u>call <SID>append_mark()<CR>
+"nnoremap <silent> m :<C-u>call <SID>append_mark()<CR>
 
 let s:filename = fnamemodify(bufname('%'), ':t')
 if s:filename == fnamemodify(expand(g:dirs_filename), ':t')
@@ -12,14 +13,14 @@ if s:filename == fnamemodify(expand(g:dirs_filename), ':t')
   nnoremap <buffer> <silent> ge :<C-u>call setreg(v:register == "" ? '"' : v:register, dirs#entry())<CR>
   nnoremap <buffer> <silent> gy :<C-u>call setreg(v:register == "" ? '"' : v:register, dirs#curln())<CR>
   nnoremap <buffer> gp $p
-  nnoremap <buffer> gs :<C-u>call dirs#do_entry('split', 'l')<CR>
-  nnoremap <buffer> go :<C-u>call dirs#do_entry('edit', 'l')<CR>
+  nnoremap <buffer> gs :<C-u>call dirs#do_entry('split', 'w')<CR>
+  nnoremap <buffer> go :<C-u>call dirs#do_entry('edit', 'w')<CR>
   nnoremap <buffer> t  :<C-u>call dirs#do_entry('tabe', '')<CR>
   nmap <buffer> , :<C-u>wall<CR>go
   nmap <buffer> <CR> :<C-u>wall<CR>go
   nmap <buffer> <2-LeftMouse> :<C-u>wall<CR>go
   nnoremap <buffer> gf :<C-u>echo dirs#tail()<CR>
-  nnoremap <buffer> gv :<C-u>if dirs#do_entry('e', 'l') \| wincmd p \| endif<CR>
+  nnoremap <buffer> gv :<C-u>if dirs#do_entry('e', 'w') \| wincmd p \| endif<CR>
   nmap <buffer> v :<C-u>wall<CR>gv
   nnoremap <buffer> Y :<C-u>call <SID>yank_buf()<CR>
   nnoremap <buffer> P :<C-u>call <SID>paste_buf()<CR>
@@ -30,6 +31,7 @@ if s:filename == fnamemodify(expand(g:dirs_filename), ':t')
   nnoremap <buffer> w wl
   nnoremap <buffer> b bh
   nnoremap <buffer> e $
+  nnoremap <buffer> <silent> = :<C-u>call <SID>win_resize()<CR>
   nnoremap <buffer> <silent> f :<C-u>call <SID>search_tailhead()<CR>
   nnoremap <buffer> <silent> ; :<C-u>call <SID>repeat_search()<CR>
 endif
@@ -92,6 +94,14 @@ function! s:open_only()
   silent! execute 'normal!' level . 'zo'
 endfunction
 
+function! s:win_resize()
+  if winwidth(0) > g:dirs_window_width
+    exec 'vertical resize' g:dirs_window_width
+  else
+    exec 'vertical resize' 1000
+  endif
+endfunction
+
 function! s:append_mark()
   let ch = nr2char(getchar())
   if ch !~? '[a-z]'
@@ -103,3 +113,4 @@ function! s:append_mark()
   call dirs#open()
   call append(0, ":norm! '" . ch . " #" . lnum . ":" . name)
 endfunction
+
