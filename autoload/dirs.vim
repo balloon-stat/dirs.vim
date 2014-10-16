@@ -148,8 +148,12 @@ function! dirs#do_entry(edit_cmd, win_cmd)
   endif
   let path = dirs#entry()
   if isdirectory(path)
+    if a:win_cmd != ""
+      execute 'wincmd' a:win_cmd
+    end
     execute 'chdir' path
     echo "cwd:" path
+    wincmd p
     return 0
   endif
   if a:win_cmd != ""
