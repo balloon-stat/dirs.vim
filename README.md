@@ -97,7 +97,7 @@ dirs#do_entry(edit_cmd, win_cmd)
 `g:dirs_filename`     vim_dirs バッファのファイルパス `'~/vim_dirs'`  
 `g:dirs_rc_filename`  DirsOpenBuf 実行時の設定ファイルのパス `'~/.dirs_rc'`  
 `g:dirs_separator` パスの区切り Windows `'\'` 他 `'/'`  
-`
+
 ---
 
 ### dirs_rc.vim の Map
