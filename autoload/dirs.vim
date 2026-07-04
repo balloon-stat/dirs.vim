@@ -162,6 +162,14 @@ function! dirs#do_entry(edit_cmd, win_cmd)
       return 1
     endif
   endif
+  if a:edit_cmd[0] == 'e'
+    let l:buf = bufnr(fnamemodify(path, ':p'))
+    if l:buf != -1
+      execute 'buffer' l:buf
+    else
+      execute 'edit' fnameescape(path)
+    endif
+  endif
   execute a:edit_cmd path
   return 1
 endfunction
