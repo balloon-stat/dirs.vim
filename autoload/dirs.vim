@@ -26,6 +26,7 @@ function! dirs#edit()
 endfunction
 
 function! s:buf_setup()
+  setlocal filetype=dirs
   setlocal foldenable foldmethod=indent foldcolumn=0
   setlocal foldtext=DirsFoldText()
   setlocal nonumber noswapfile nobuflisted nowrap
